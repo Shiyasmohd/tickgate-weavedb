@@ -10,7 +10,9 @@ import { EventData } from "@/types/types"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { getEventsData } from "@/lib/helper"
+import { Button } from "@/components/ui/button"
+//@ts-ignore
+import WeaveDB from "weavedb-sdk"
 
 export default function IndexPage() {
 
@@ -18,15 +20,24 @@ export default function IndexPage() {
   const account = useAccount()
   const router = useRouter()
 
+  const handleTest = async () => {
+
+    console.log("Connecting Weavedb")
+    const db = new WeaveDB({ contractTxId: process.env.WEAVEDB_CONTRACT_TX_ID })
+    await db.init()
+    let res = await db.add({ "age": 20, "name": "Shiyas" }, "new-testing")
+    console.log(res)
+
+  }
+
   useEffect(() => {
     const fetchData: any = async () => {
-      const allEvents = await getEventsData();
+      // const allEvents = await getEventsData();
       //@ts-ignore
       setEventData(allEvents);
     }
     fetchData();
   }, [])
-  console.log(eventData);
 
   return (
     <section className=" grid items-center gap-6 pb-8 pt-6 md:py-10">
@@ -73,6 +84,9 @@ export default function IndexPage() {
                   </div>
                 </button>
               </Link>
+              <Button onClick={handleTest}>
+                Test
+              </Button>
             </div>
             {/* Created Events */}
             <div className="w-full my-9">

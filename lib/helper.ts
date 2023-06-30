@@ -1,20 +1,8 @@
 import { Network, Alchemy } from "alchemy-sdk";
 import { Chain } from "@/types/types";
-import { app, db } from "@/config/firebase-config";
-import {
-    serverTimestamp,
-    collection,
-    addDoc,
-    DocumentReference,
-    query,
-    getDocs,
-    where,
-    doc,
-    getDoc,
-    setDoc,
-    updateDoc,
-    arrayUnion,
-} from "firebase/firestore";
+import { Web3Storage, getFilesFromPath, File } from 'web3.storage'
+//@ts-ignore
+import WeaveDB from "weavedb-sdk"
 
 export const shortWalletAddress = (address?: string) => {
     if (address) return address.slice(0, 5) + "..." + address.slice(-4,)
@@ -45,71 +33,30 @@ export const getAddressFromContract = async (contractAddr: string, chain: Chain)
 
 }
 
-export const getEventsData = async (address?: string) => {
-    let q;
-    if (address) {
-        q = query(collection(db, "events"), where("eventCreator", "==", address));
-    } else {
-        q = query(collection(db, "events"));
-    }
+const createEvent = async (
 
-    const data = await getDocs(q);
-    return data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+) => {
 
-    // //usage
-    // // Get all events
-    // const allEvents = await getEventsData();
-    // console.log(allEvents); // Array of all event data
+    console.log("Connecting Weavedb")
+    const db = new WeaveDB({ contractTxId: process.env.WEAVEDB_CONTRACT_TX_ID })
+    await db.init()
+    let res = await db.add({ "age": 20, "name": "Shiyas" }, "new-testing")
+    console.log(res)
 
-    // // Get events by specific address
-    // const eventsByAddress = await getEventsData("example-address");
-    // console.log(eventsByAddress); // Array of event data filtered by address
-};
-
-//function to query event by doc id 
-export const getEventById = async (id: string) => {
-    const docRef = doc(db, "events", id);
-    const docSnapshot = await getDoc(docRef);
-
-    if (!docSnapshot.exists()) {
-        // Handle case where no document with the given ID is found
-        return null;
-    }
-
-    const data = docSnapshot.data();
-
-    return { ...data, id: docSnapshot.id };
 }
 
-export const admitUser = async (id: string, address: string) => {
-    const docRef = doc(db, "events", id);
-    const update = await updateDoc(docRef, {
-        attendList: arrayUnion(address)
-    })
-        .then((res) => {
-            console.log(res)
-            return "success"
-        })
-        .catch((err) => {
-            console.log(err)
-            return "error"
-        })
-
-    return update
+function getAccessToken() {
+    return process.env.NEXT_PUBLIC_WEB3_STORAGE_KEY as string
 }
-export const storeAddressToDb = async (id: string, addresses: string[]) => {
-    const docRef = doc(db, "events", id);
-    const update = await updateDoc(docRef, {
-        allowList: addresses
-    })
-        .then((res) => {
-            console.log(res)
-            return "success"
-        })
-        .catch((err) => {
-            console.log(err)
-            return "error"
-        })
 
-    return update
+function makeStorageClient() {
+    return new Web3Storage({ token: getAccessToken() })
+}
+
+export async function storeFiles(files: any) {
+    console.log("uplaod started...")
+    const client = makeStorageClient()
+    const cid = await client.put(files)
+    console.log('stored files with cid:', cid)
+    return `https://ipfs.io/ipfs/${cid}/${files[0].name}`
 }

@@ -1,6 +1,5 @@
 "use client"
 import React, { useState } from "react";
-import { v4 } from "uuid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,28 +10,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { SetStateAction, useEffect } from "react";
 import Lottie from "react-lottie";
 import animationData from "../../public/tick-mark-lotti.json";
 import { Chain, EventData, EventType } from "@/types/types";
-import { db, storage } from "@/config/firebase-config";
-import {
-    serverTimestamp,
-    collection,
-    addDoc,
-    DocumentReference,
-} from "firebase/firestore";
-import {
-    ref,
-    uploadBytes,
-    getDownloadURL,
-    listAll,
-    list,
-    UploadTaskSnapshot,
-} from "firebase/storage";
 import { useRouter } from "next/navigation"
 import { useAccount } from "wagmi";
-
+import { storeFiles } from "@/lib/helper";
+//@ts-ignore
+import WeaveDB from "weavedb-sdk"
 
 
 export default function CreateEvent() {
@@ -52,16 +37,14 @@ export default function CreateEvent() {
     const [docLoading, setDocLoading] = useState(false);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false)
     const [isFormSubmitting, setIsFormSubmitting] = useState(false)
-    const eventCollectionRef = collection(db, "events");
-    const storageRef = ref(storage, "events");
 
-    const handleFileChange = (event: any) => {
-        const selectedFile = event.target.files?.[0];
-        if (selectedFile) {
-            if (selectedFile.size > 15000000) {
+
+    const handleFileChange = (files: any) => {
+        if (files) {
+            if (files.size > 15000000) {
                 alert("File size must be under 15MB!");
             } else {
-                setImage(selectedFile);
+                setImage(files);
             }
         }
     };
@@ -75,24 +58,11 @@ export default function CreateEvent() {
         },
     };
 
-    const uploadImage = async (): Promise<string | undefined> => {
-        if (!image) return "NA";
-        setDocLoading(true);
-        const docRef = ref(storage, `doc/logo/${image.name + v4()}`);
-        try {
-            //@ts-ignore
-            const snapshot: UploadTaskSnapshot = await uploadBytes(docRef, image);
-            const url: string = await getDownloadURL(snapshot.ref);
-            setDocLoading(false);
-            return url;
-        } catch (error) {
-            console.error("Error uploading file:", error);
-            setDocLoading(false);
-            return 'NA';
-        }
-    };
 
-    const createEvent = async (imageUrl: string): Promise<void> => {
+    const createEvent = async (): Promise<void> => {
+        setIsFormSubmitting(true)
+        let imageUrl = await storeFiles(image)
+
         try {
             const eventData: EventData = {
                 eventName: eventName,
@@ -106,15 +76,17 @@ export default function CreateEvent() {
                 typeOfEvent: typeOfEvent,
                 chain: chain,
                 eventCreator: account.address as string,
-                imageUrl: imageUrl,
+                imageUrl,
             };
 
-            const docRef: DocumentReference = await addDoc(
-                eventCollectionRef,
-                eventData
-            );
+            console.log({ eventData })
+
+            const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
+            await db.init()
+            let res = await db.add(eventData, "event-testing")
+            console.log(res)
+
             setIsFormSubmitted(true)
-            console.log("Document written with ID: ", docRef.id);
             setTimeout(() => {
                 router.push("/");
             }, 1000);
@@ -146,7 +118,7 @@ export default function CreateEvent() {
                             <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
                                 Create Event
                             </h1>
-                            <form className="mt-4 flex flex-col gap-3 md:w-3/4 lg:w-3/5 xl:w-1/2" onSubmit={handleSubmit}>
+                            <div className="mt-4 flex flex-col gap-3 md:w-3/4 lg:w-3/5 xl:w-1/2" >
                                 <div>
                                     <Label>Event Name</Label>
                                     <Input
@@ -246,13 +218,13 @@ export default function CreateEvent() {
                                         accept={acceptedFileTypes}
                                         className="mt-1"
                                         // value={image? image.name : ''}
-                                        onChange={handleFileChange}
+                                        onChange={(e) => handleFileChange(e.target.files)}
                                     />
                                 </div>
                                 <div className="flex justify-end mt-1">
-                                    <Button disabled={isFormSubmitting} type="submit" >Submit</Button>
+                                    <Button disabled={isFormSubmitting} onClick={createEvent} type="submit" >Submit</Button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
             }
