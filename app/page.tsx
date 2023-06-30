@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 //@ts-ignore
 import WeaveDB from "weavedb-sdk"
 import Arweave from "arweave";
-import { makeFileObjects, storeFiles } from "@/lib/helper"
+import { getEventsByOwner, makeFileObjects, storeFiles } from "@/lib/helper"
 export default function IndexPage() {
 
   const [eventData, setEventData] = useState<WeaveDBData[]>([]);
@@ -23,10 +23,7 @@ export default function IndexPage() {
 
   const handleTest = async () => {
 
-    const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
-    await db.init()
-
-    await db.update({ "name": db.union("hello world") }, "test", "bCRqEA8HOzAAtJzrTqRr")
+    await getEventsByOwner(account.address as string)
   }
 
   const getEventsData = async () => {

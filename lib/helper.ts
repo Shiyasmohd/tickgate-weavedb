@@ -1,5 +1,5 @@
 import { Network, Alchemy } from "alchemy-sdk";
-import { Chain, EventData } from "@/types/types";
+import { Chain, EventData, WeaveDBData } from "@/types/types";
 import { Web3Storage, getFilesFromPath, File } from 'web3.storage'
 //@ts-ignore
 import WeaveDB from "weavedb-sdk"
@@ -82,4 +82,12 @@ export async function admitUser(id: string, address: string) {
 
     let res = await db.update({ "attendList": db.union(address) }, "event-testing", id)
     console.log(res)
+}
+
+export async function getEventsByOwner(owner: string): Promise<WeaveDBData[]> {
+    const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
+    await db.init()
+    let res = await db.cget("event-testing", ["eventCreator", "==", owner])
+    console.log(res)
+    return res
 }

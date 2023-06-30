@@ -1,8 +1,8 @@
 'use client'
 import { CustomConnectButton } from "@/components/custom-connect"
 import EventCard from "@/components/event-card"
-import { getEventsData } from "@/lib/helper"
-import { EventData } from "@/types/types"
+import { getEventsByOwner } from "@/lib/helper"
+import { EventData, WeaveDBData } from "@/types/types"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
@@ -10,10 +10,12 @@ import { useAccount } from "wagmi"
 export default function EventHistory() {
 
     const account = useAccount()
-    const [eventHistory, setEventHistory] = useState<EventData[]>([])
+    const [eventHistory, setEventHistory] = useState<WeaveDBData[]>([])
+
+
 
     const fetchData: any = async () => {
-        const allEvents = await getEventsData(account.address);
+        const allEvents = await getEventsByOwner(account.address as string);
         //@ts-ignore
         setEventHistory(allEvents);
     }
@@ -51,11 +53,11 @@ export default function EventHistory() {
                                     :
                                     <div className="w-full grid grid-cols-2 gap-4 xl:grid-cols-3">
                                         {
-                                            eventHistory.map((event: EventData) => {
+                                            eventHistory.map((event: WeaveDBData) => {
                                                 return (
                                                     <div className="">
                                                         <Link href={`/event/${event.id}`} key={event.id}>
-                                                            <EventCard event={event} />
+                                                            <EventCard event={event.data} />
                                                         </Link>
                                                     </div>
                                                 )
