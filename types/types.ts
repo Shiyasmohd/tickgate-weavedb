@@ -22,5 +22,10 @@ export type EventData = {
   typeOfEvent: EventType;
   chain: Chain;
   eventCreator: string;
+}
 
+export type WeaveDBData = {
+  data: EventData
+  id: string
+  setter: string
 }

@@ -6,35 +6,41 @@ import Head from "next/head"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import EventCard from '@/components/event-card'
-import { EventData } from "@/types/types"
+import { EventData, WeaveDBData } from "@/types/types"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 //@ts-ignore
 import WeaveDB from "weavedb-sdk"
+import { get } from "http"
 
 export default function IndexPage() {
 
-  const [eventData, setEventData] = useState([]);
+  const [eventData, setEventData] = useState<WeaveDBData[]>([]);
   const account = useAccount()
   const router = useRouter()
 
   const handleTest = async () => {
 
     console.log("Connecting Weavedb")
-    const db = new WeaveDB({ contractTxId: process.env.WEAVEDB_CONTRACT_TX_ID })
+    const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
     await db.init()
-    let res = await db.add({ "age": 20, "name": "Shiyas" }, "new-testing")
+    let res = await db.cget("event-testing")
     console.log(res)
 
   }
 
+  const getEventsData = async () => {
+    const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
+    await db.init()
+    let res = await db.cget("event-testing")
+    setEventData(res)
+  }
+
   useEffect(() => {
     const fetchData: any = async () => {
-      // const allEvents = await getEventsData();
-      //@ts-ignore
-      setEventData(allEvents);
+      getEventsData()
     }
     fetchData();
   }, [])
@@ -94,11 +100,11 @@ export default function IndexPage() {
                 Upcoming Events
               </h2>
               <div className="w-full grid grid-cols-2 gap-4">
-                {eventData.map((event: EventData) => {
+                {eventData.map((event: WeaveDBData, index) => {
                   return (
-                    <div className="h-full">
-                      <Link href={`/event/${event.id}`} key={event.id} className="h-full">
-                        <EventCard event={event} />
+                    <div className="h-full" key={index}>
+                      <Link href={`/event/${event.id}`} className="h-full">
+                        <EventCard event={event.data} />
                       </Link>
                     </div>
                   )
