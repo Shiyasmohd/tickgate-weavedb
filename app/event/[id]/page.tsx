@@ -10,7 +10,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { admitUser, getAddressFromContract, getEventById, shortWalletAddress, storeAddressToDb } from "@/lib/helper";
+import { admitUser, getAddressFromContract, getEventById, makeFileObjects, shortWalletAddress, storeAddressToDb, storeFiles } from "@/lib/helper";
 import { useEffect, useState } from "react";
 import { EventData } from "@/types/types";
 import { QrReader } from 'react-qr-reader';
@@ -18,6 +18,8 @@ import { useAccount } from "wagmi";
 import { ExternalLink, Loader2, ScanLine, UserCheck, UserPlus, XCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
+import axios from 'axios'
+
 
 export default function EventDetails({ params }: { params: { id: string } }) {
 
@@ -26,6 +28,7 @@ export default function EventDetails({ params }: { params: { id: string } }) {
     const [scannedAddress, setScannedAddress] = useState<string>('');
     const [displayResult, setDisplayResult] = useState<"Scan QR Code" | "User Approved" | "User Rejected" | "User Already Entered">('Scan QR Code');
     const [loading, setLoading] = useState(false);
+    const [allowList, setAllowList] = useState<string[]>([]);
     const account = useAccount()
     const { toast } = useToast()
 
@@ -43,15 +46,13 @@ export default function EventDetails({ params }: { params: { id: string } }) {
     }
 
     const checkIfApproved = async (address: string) => {
-        console.log(address)
-        console.log(eventData.allowList)
-        console.log(eventData.attendList.find(item => item == address))
+
         if (eventData.attendList.find(item => item == address)) {
             setDisplayResult("User Already Entered");
             console.log("User Already Entered")
             return false;
         }
-        else if (eventData.allowList.find(item => item == address)) {
+        else if (allowList.find(item => item == address)) {
             console.log('approved');
             setDisplayResult("User Approved");
             return true;
@@ -66,12 +67,15 @@ export default function EventDetails({ params }: { params: { id: string } }) {
         setLoading(true);
         console.log("fetching nfts from contract")
         const nftAddresses = await getAddressFromContract(eventData.contractAddress, eventData.chain);
-        let tempAllowList: EventData = eventData;
-        tempAllowList.allowList = nftAddresses;
-        if (eventData.id) {
-            await storeAddressToDb(eventData.id, nftAddresses)
-            setEventData(tempAllowList)
+        console.log({ nftAddresses })
+        setAllowList(nftAddresses)
+        let allowList = {
+            addresses: nftAddresses,
         }
+        let url = await storeFiles(makeFileObjects(allowList))
+
+        await storeAddressToDb(params.id, url)
+
         setLoading(false);
     }
 
@@ -95,11 +99,18 @@ export default function EventDetails({ params }: { params: { id: string } }) {
     useEffect(() => {
         const fetchData: any = async () => {
             const event = await getEventById(params.id);
-            //@ts-ignore
             setEventData(event);
-            //@ts-ignore
             checkEventStatus(event.startTime, event.endTime);
-            console.log(event);
+            if (event.allowList.length > 0) {
+                console.log("Fetching allowList addresses")
+                await axios.get(event.allowList)
+                    .then((res) => {
+                        setAllowList(res.data.addresses)
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
+            }
         }
         fetchData();
     }, [params.id])
@@ -149,7 +160,7 @@ export default function EventDetails({ params }: { params: { id: string } }) {
                         eventData?.eventCreator == account.address && eventData && eventStatus == "live" && eventData.allowList.length > 0 &&
                         <Dialog >
                             <DialogTrigger asChild>
-                                <Button className="w-full text-white">Scan</Button>
+                                <Button className="w-full text-white">Scan </Button>
                             </DialogTrigger>
                             <DialogContent onCloseAutoFocus={() => setDisplayResult("Scan QR Code")}>
                                 <DialogHeader>

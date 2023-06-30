@@ -71,7 +71,7 @@ export default function CreateEvent() {
                 contractAddress: contractAddress,
                 location: location,
                 mapLink: mapLink,
-                allowList: [],
+                allowList: "",
                 attendList: [],
                 typeOfEvent: typeOfEvent,
                 chain: chain,

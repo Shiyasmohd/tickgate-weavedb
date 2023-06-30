@@ -17,7 +17,7 @@ export type EventData = {
   location: string;
   mapLink: string;
   imageUrl: string;
-  allowList: string[];
+  allowList: string;
   attendList: string[];
   typeOfEvent: EventType;
   chain: Chain;

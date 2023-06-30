@@ -13,8 +13,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 //@ts-ignore
 import WeaveDB from "weavedb-sdk"
-import { get } from "http"
-
+import Arweave from "arweave";
+import { makeFileObjects, storeFiles } from "@/lib/helper"
 export default function IndexPage() {
 
   const [eventData, setEventData] = useState<WeaveDBData[]>([]);
@@ -23,12 +23,10 @@ export default function IndexPage() {
 
   const handleTest = async () => {
 
-    console.log("Connecting Weavedb")
     const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
     await db.init()
-    let res = await db.cget("event-testing")
-    console.log(res)
 
+    await db.update({ "name": db.union("hello world") }, "test", "bCRqEA8HOzAAtJzrTqRr")
   }
 
   const getEventsData = async () => {
