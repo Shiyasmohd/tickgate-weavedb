@@ -23,6 +23,11 @@ export default function IndexPage() {
     let res = await db.cget("event-testing")
     setEventData(res)
   }
+  const test = async () => {
+    const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
+    await db.init()
+    let res = await db.update({ "allowList": "" }, "event-testing", "5LPRYcnDcjUTGSo5PRGO")
+  }
 
   useEffect(() => {
     const fetchData: any = async () => {
@@ -76,6 +81,9 @@ export default function IndexPage() {
                   </div>
                 </button>
               </Link>
+              <button onClick={test}>
+                test
+              </button>
             </div>
             {/* Created Events */}
             <div className="w-full my-9">

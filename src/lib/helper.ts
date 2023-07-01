@@ -12,6 +12,8 @@ export const getAddressFromContract = async (contractAddr: string, chain: Chain)
 
     let network = chain == "Polygon" ? Network.MATIC_MAINNET : Network.ETH_MAINNET;
 
+    console.log("network :", network)
+
     const settings = {
         apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API,
         network,

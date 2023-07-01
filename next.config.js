@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
@@ -9,13 +10,10 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    appDir: true,
-  },
   webpack: config => {
-    config.resolve.fallback = { fs: false, net: false, tls: false, lokijs: false, "coffee-script": false, "pino-pretty": false };
+    config.resolve.fallback = { fs: false, net: false, tls: false, lokijs: false };
     return config;
   },
 }
 
-export default nextConfig
+module.exports = nextConfig

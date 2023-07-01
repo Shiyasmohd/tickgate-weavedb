@@ -11,7 +11,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import Lottie from "react-lottie";
-import animationData from "../../public/tick-mark-lotti.json";
+import animationData from "../../../public/tick-mark-lotti.json";
 import { Chain, EventData, EventType } from "@/types/types";
 import { useRouter } from "next/navigation"
 import { useAccount } from "wagmi";
@@ -124,7 +124,7 @@ function CreateEvent() {
                                 </div>
                                 <div>
                                     <Label>Event type</Label>
-                                    <Select onValueChange={(value) => setTypeOfEvent(value as EventType)} required={true}>
+                                    <Select onValueChange={(value: string) => setTypeOfEvent(value as EventType)} required={true}>
                                         <SelectTrigger className="mt-1" >
                                             <SelectValue placeholder="Meet Up" />
                                         </SelectTrigger>
@@ -169,7 +169,7 @@ function CreateEvent() {
                                 </div>
                                 <div>
                                     <Label>Select chain</Label>
-                                    <Select onValueChange={(value) => setChain(value as Chain)} defaultValue='Polygon' >
+                                    <Select onValueChange={(value: string) => setChain(value as Chain)} defaultValue='Polygon' >
                                         <SelectTrigger className="mt-1" >
                                             <SelectValue placeholder="Chain" />
                                         </SelectTrigger>

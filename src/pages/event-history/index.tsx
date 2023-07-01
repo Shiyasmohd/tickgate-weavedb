@@ -53,9 +53,9 @@ export default function EventHistory() {
                                     :
                                     <div className="w-full grid grid-cols-2 gap-4 xl:grid-cols-3">
                                         {
-                                            eventsHistory.map((event: WeaveDBData) => {
+                                            eventsHistory.map((event: WeaveDBData, index: number) => {
                                                 return (
-                                                    <div className="">
+                                                    <div className="" key={index}>
                                                         <Link href={`/event/${event.id}`} key={event.id}>
                                                             <EventCard event={event.data} />
                                                         </Link>
