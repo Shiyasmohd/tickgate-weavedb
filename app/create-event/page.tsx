@@ -20,7 +20,8 @@ import { storeFiles } from "@/lib/helper";
 import WeaveDB from "weavedb-sdk"
 
 
-export default function CreateEvent() {
+function CreateEvent() {
+
     const router = useRouter()
     const acceptedFileTypes = '.jpg, .jpeg, .png';
     const account = useAccount();
@@ -33,8 +34,6 @@ export default function CreateEvent() {
     const [image, setImage] = useState<File | null>(null);
     const [typeOfEvent, setTypeOfEvent] = useState<EventType>("Meet Up");
     const [chain, setChain] = useState<Chain>('Polygon');
-    const [eventCreator, setEventCreator] = useState("");
-    const [docLoading, setDocLoading] = useState(false);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false)
     const [isFormSubmitting, setIsFormSubmitting] = useState(false)
 
@@ -59,7 +58,7 @@ export default function CreateEvent() {
     };
 
 
-    const createEvent = async (): Promise<void> => {
+    const handleCreateEvent = async (): Promise<void> => {
         setIsFormSubmitting(true)
         let imageUrl = await storeFiles(image)
 
@@ -96,13 +95,6 @@ export default function CreateEvent() {
         }
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-        event.preventDefault(); // Prevent the default form submission behavior
-        // Call the necessary functions to handle form submission
-        setIsFormSubmitting(true)
-        //@ts-ignore
-        uploadImage().then((imageUrl) => createEvent(imageUrl));
-    };
 
     return (
         <div className="pb-10" >
@@ -222,7 +214,7 @@ export default function CreateEvent() {
                                     />
                                 </div>
                                 <div className="flex justify-end mt-1">
-                                    <Button disabled={isFormSubmitting} onClick={createEvent} type="submit" >Submit</Button>
+                                    <Button disabled={isFormSubmitting} onClick={handleCreateEvent} type="submit" >Submit</Button>
                                 </div>
                             </div>
                         </div>
@@ -231,3 +223,5 @@ export default function CreateEvent() {
         </div>
     );
 }
+
+export default CreateEvent

@@ -1,6 +1,6 @@
 import { Network, Alchemy } from "alchemy-sdk";
 import { Chain, EventData, WeaveDBData } from "@/types/types";
-import { Web3Storage, getFilesFromPath, File } from 'web3.storage'
+import { Web3Storage } from 'web3.storage'
 //@ts-ignore
 import WeaveDB from "weavedb-sdk"
 

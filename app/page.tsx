@@ -2,29 +2,20 @@
 
 import { CustomConnectButton } from "@/components/custom-connect"
 import { useAccount } from "wagmi"
-import Head from "next/head"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
 import EventCard from '@/components/event-card'
-import { EventData, WeaveDBData } from "@/types/types"
+import { WeaveDBData } from "@/types/types"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 //@ts-ignore
 import WeaveDB from "weavedb-sdk"
-import Arweave from "arweave";
-import { getEventsByOwner, makeFileObjects, storeFiles } from "@/lib/helper"
+import Image from "next/image"
+
+
 export default function IndexPage() {
 
   const [eventData, setEventData] = useState<WeaveDBData[]>([]);
   const account = useAccount()
-  const router = useRouter()
-
-  const handleTest = async () => {
-
-    await getEventsByOwner(account.address as string)
-  }
 
   const getEventsData = async () => {
     const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
@@ -85,9 +76,6 @@ export default function IndexPage() {
                   </div>
                 </button>
               </Link>
-              <Button onClick={handleTest}>
-                Test
-              </Button>
             </div>
             {/* Created Events */}
             <div className="w-full my-9">

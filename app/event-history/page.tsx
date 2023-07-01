@@ -2,7 +2,7 @@
 import { CustomConnectButton } from "@/components/custom-connect"
 import EventCard from "@/components/event-card"
 import { getEventsByOwner } from "@/lib/helper"
-import { EventData, WeaveDBData } from "@/types/types"
+import { WeaveDBData } from "@/types/types"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
@@ -10,7 +10,7 @@ import { useAccount } from "wagmi"
 export default function EventHistory() {
 
     const account = useAccount()
-    const [eventHistory, setEventHistory] = useState<WeaveDBData[]>([])
+    const [eventsHistory, setEventHistory] = useState<WeaveDBData[]>([])
 
 
 
@@ -43,7 +43,7 @@ export default function EventHistory() {
                                 Event History
                             </h2>
                             {
-                                eventHistory.length === 0 ?
+                                eventsHistory.length === 0 ?
                                     <div className="flex flex-col justify-center items-center gap-6 h-[calc(100vh-200px)]">
                                         <h1 className="text-3xl text-center font-extrabold leading-tight tracking-tighter md:text-4xl">
                                             No Events Created By You.
@@ -53,7 +53,7 @@ export default function EventHistory() {
                                     :
                                     <div className="w-full grid grid-cols-2 gap-4 xl:grid-cols-3">
                                         {
-                                            eventHistory.map((event: WeaveDBData) => {
+                                            eventsHistory.map((event: WeaveDBData) => {
                                                 return (
                                                     <div className="">
                                                         <Link href={`/event/${event.id}`} key={event.id}>
