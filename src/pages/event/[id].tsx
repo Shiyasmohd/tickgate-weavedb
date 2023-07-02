@@ -22,6 +22,9 @@ import axios from 'axios'
 import { useRouter } from "next/router";
 //@ts-ignore
 import WeaveDB from 'weavedb-sdk'
+import {
+    ShareToLens, Theme, Size
+  } from '@lens-protocol/widgets-react'
 
 export default function EventDetails() {
 
@@ -158,6 +161,7 @@ export default function EventDetails() {
                                 >
                                     No. of Approved : {eventData.attendList?.length}
                                 </Button>
+
                                 {
                                     eventData?.eventCreator == account.address && eventData && eventStatus == "live" && (eventData.allowList.length == 0) ?
                                         <Button onClick={handleFetchNfts} className="w-full text-white">
@@ -169,7 +173,24 @@ export default function EventDetails() {
                                 }
 
                                 {
+                                    eventData?.eventCreator == account.address && 
+                                    <div className="mt-3">
+                                        <ShareToLens
+                                            title="Share to Lens"
+                                            content={eventData.imageUrl}
+                                            url={`https://tickgate-weavedb.vercel.app/event/${eventData.id}`}
+                                            via="TickGateApp"
+                                            theme={Theme.mint}
+                                            size={Size.medium}
+                                        />
+                                        <div>(don&apos;t have a lens handle)</div>
+                                        <Link href='https://claim.lens.xyz' target="_blank"><button className="bg-[#bde0c6] p-2 rounded-lg">Claim your Lens handle here</button></Link>
+                                    </div>
+                                }
+
+                                {
                                     eventData?.eventCreator == account.address && eventData && eventStatus == "live" && eventData.allowList.length > 0 &&
+                                    <div>
                                     <Dialog >
                                         <DialogTrigger asChild>
                                             <Button className="w-full text-white">Scan  </Button>
@@ -227,6 +248,7 @@ export default function EventDetails() {
                                             </DialogHeader>
                                         </DialogContent>
                                     </Dialog>
+                                    </div>
                                 }
 
 
