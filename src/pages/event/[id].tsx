@@ -24,7 +24,7 @@ import { useRouter } from "next/router";
 import WeaveDB from 'weavedb-sdk'
 import {
     ShareToLens, Theme, Size
-  } from '@lens-protocol/widgets-react'
+} from '@lens-protocol/widgets-react'
 
 export default function EventDetails() {
 
@@ -172,82 +172,82 @@ export default function EventDetails() {
                                         : ""
                                 }
 
-                                {
-                                    eventData?.eventCreator == account.address && 
-                                    <div className="mt-3">
-                                        <ShareToLens
-                                            title="Share to Lens"
-                                            content={eventData.imageUrl}
-                                            url={`https://tickgate-weavedb.vercel.app/event/${eventData.id}`}
-                                            via="TickGateApp"
-                                            theme={Theme.mint}
-                                            size={Size.medium}
-                                        />
-                                        <div>(don&apos;t have a lens handle)</div>
-                                        <Link href='https://claim.lens.xyz' target="_blank"><button className="bg-[#bde0c6] p-2 rounded-lg">Claim your Lens handle here</button></Link>
-                                    </div>
-                                }
+                                <div className="mt-3 flex justify-between flex-row">
+                                    <ShareToLens
+                                        title="Share to Lens"
+                                        content="Hey, I am attending this event. Join me!"
+                                        url={`https://tickgate-weavedb.vercel.app/event/${router.query.id}`}
+                                        via="TickGate"
+                                        theme={Theme.mint}
+                                        size={Size.medium}
+                                    />
+                                    <Link href='https://claim.lens.xyz' target="_blank">
+                                        <button className="bg-[#bde0c6] text-[#464646]  p-2 rounded-full px-4">
+                                            Claim Lens handle
+                                        </button>
+                                    </Link>
+                                </div>
 
                                 {
                                     eventData?.eventCreator == account.address && eventData && eventStatus == "live" && eventData.allowList.length > 0 &&
                                     <div>
-                                    <Dialog >
-                                        <DialogTrigger asChild>
-                                            <Button className="w-full text-white">Scan  </Button>
-                                        </DialogTrigger>
-                                        <DialogContent onCloseAutoFocus={() => setDisplayResult("Scan QR Code")}>
-                                            <DialogHeader>
-                                                <DialogTitle>{eventData.eventName}</DialogTitle>
-                                                <DialogDescription>
-                                                    <div className='w-full'>
-                                                        <QrReader
-                                                            onResult={(result: any, error) => {
-                                                                if (!!result) {
-                                                                    setScannedAddress(result?.text)
-                                                                    checkIfApproved(result?.text)
+                                        <Dialog >
+                                            <DialogTrigger asChild>
+                                                <Button className="w-full text-white">Scan  </Button>
+                                            </DialogTrigger>
+                                            <DialogContent onCloseAutoFocus={() => setDisplayResult("Scan QR Code")}>
+                                                <DialogHeader>
+                                                    <DialogTitle>{eventData.eventName}</DialogTitle>
+                                                    <DialogDescription>
+                                                        <div className='w-full'>
+                                                            <QrReader
+                                                                onResult={(result: any, error) => {
+                                                                    if (!!result) {
+                                                                        setScannedAddress(result?.text)
+                                                                        checkIfApproved(result?.text)
+                                                                    }
+
+                                                                    if (!!error) {
+                                                                        // console.info(error);
+                                                                    }
+                                                                }}
+                                                                constraints={{
+                                                                    facingMode: 'environment'
+                                                                }}
+                                                            />
+                                                            <p className="flex justify-center items-center gap-4 text-black text-center pt-2 pb-8">
+                                                                {
+                                                                    displayResult == "User Approved" ? <UserCheck color="#00c200" />
+                                                                        : displayResult == "User Rejected" ? <XCircle color="#ff0000" />
+                                                                            : displayResult == "User Already Entered" ? <UserPlus color="#ffae00" />
+                                                                                : displayResult == "Scan QR Code" ? <ScanLine color="#000000" /> : ""
+
                                                                 }
+                                                                {displayResult}
+                                                            </p>
+                                                        </div>
 
-                                                                if (!!error) {
-                                                                    // console.info(error);
-                                                                }
-                                                            }}
-                                                            constraints={{
-                                                                facingMode: 'environment'
-                                                            }}
-                                                        />
-                                                        <p className="flex justify-center items-center gap-4 text-black text-center pt-2 pb-8">
-                                                            {
-                                                                displayResult == "User Approved" ? <UserCheck color="#00c200" />
-                                                                    : displayResult == "User Rejected" ? <XCircle color="#ff0000" />
-                                                                        : displayResult == "User Already Entered" ? <UserPlus color="#ffae00" />
-                                                                            : displayResult == "Scan QR Code" ? <ScanLine color="#000000" /> : ""
-
-                                                            }
-                                                            {displayResult}
-                                                        </p>
-                                                    </div>
-
-                                                    <Button
-                                                        disabled
-                                                        className="w-full bg-[#000] text-white"
-                                                    >
-                                                        No. of Approved : {eventData.attendList?.length}
-                                                    </Button>
-                                                    {
-                                                        displayResult == "User Approved" &&
                                                         <Button
-                                                            onClick={handleAdmit}
-                                                            className="w-full text-white mt-4"
+                                                            disabled
+                                                            className="w-full bg-[#000] text-white"
                                                         >
-                                                            {
-                                                                loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Admit User"
-                                                            }
+                                                            No. of Approved : {eventData.attendList?.length}
                                                         </Button>
-                                                    }
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                        </DialogContent>
-                                    </Dialog>
+                                                        {
+                                                            displayResult == "User Approved" &&
+                                                            <Button
+                                                                onClick={handleAdmit}
+                                                                className="w-full text-white mt-4"
+                                                            >
+                                                                {
+                                                                    loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Admit User"
+                                                                }
+                                                            </Button>
+                                                        }
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                            </DialogContent>
+                                        </Dialog>
                                     </div>
                                 }
 
