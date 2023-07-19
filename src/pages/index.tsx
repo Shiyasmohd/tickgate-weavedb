@@ -82,9 +82,6 @@ export default function IndexPage() {
                   </div>
                 </button>
               </Link>
-              <button onClick={test}>
-                test
-              </button>
             </div>
             {/* Created Events */}
             <div className="w-full my-9">
