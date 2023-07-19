@@ -172,22 +172,6 @@ export default function EventDetails() {
                                         : ""
                                 }
 
-                                <div className="mt-3 flex justify-between flex-row">
-                                    <ShareToLens
-                                        title="Share to Lens"
-                                        content="Hey, I am attending this event. Join me!"
-                                        url={`https://tickgate-weavedb.vercel.app/event/${router.query.id}`}
-                                        via="TickGate"
-                                        theme={Theme.mint}
-                                        size={Size.medium}
-                                    />
-                                    <Link href='https://claim.lens.xyz' target="_blank">
-                                        <button className="bg-[#bde0c6] text-[#464646]  p-2 rounded-full px-4">
-                                            Claim Lens handle
-                                        </button>
-                                    </Link>
-                                </div>
-
                                 {
                                     eventData?.eventCreator == account.address && eventData && eventStatus == "live" && eventData.allowList.length > 0 &&
                                     <div>
@@ -250,6 +234,24 @@ export default function EventDetails() {
                                         </Dialog>
                                     </div>
                                 }
+
+                                <div className="mt-3 flex justify-between flex-row">
+                                    <ShareToLens
+                                        title="Share to Lens"
+                                        content="Hey, I am attending this event. Join me!"
+                                        url={`https://tickgate-weavedb.vercel.app/event/${router.query.id}`}
+                                        via="TickGate"
+                                        theme={Theme.mint}
+                                        size={Size.medium}
+                                    />
+                                    <Link href='https://claim.lens.xyz' target="_blank">
+                                        <button className="bg-[#bde0c6] text-[#464646]  p-2 rounded-full px-4">
+                                            Claim Lens handle
+                                        </button>
+                                    </Link>
+                                </div>
+
+
 
 
                             </div>
