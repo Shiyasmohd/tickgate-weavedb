@@ -10,6 +10,7 @@ import Link from "next/link"
 //@ts-ignore
 import WeaveDB from "weavedb-sdk"
 import Image from "next/image"
+import { COLLECTION } from "@/lib/helper"
 
 
 export default function IndexPage() {
@@ -20,13 +21,13 @@ export default function IndexPage() {
   const getEventsData = async () => {
     const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
     await db.init()
-    let res = await db.cget("event-testing")
+    let res = await db.cget(COLLECTION)
     setEventData(res)
   }
   const test = async () => {
     const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
     await db.init()
-    let res = await db.update({ "allowList": "" }, "event-testing", "5LPRYcnDcjUTGSo5PRGO")
+    let res = await db.update({ "allowList": "" }, COLLECTION, "5LPRYcnDcjUTGSo5PRGO")
   }
 
   useEffect(() => {

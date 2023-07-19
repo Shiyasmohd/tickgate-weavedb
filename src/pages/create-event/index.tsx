@@ -15,7 +15,7 @@ import animationData from "../../../public/tick-mark-lotti.json";
 import { Chain, EventData, EventType } from "@/types/types";
 import { useRouter } from "next/navigation"
 import { useAccount } from "wagmi";
-import { storeFiles } from "@/lib/helper";
+import { COLLECTION, storeFiles } from "@/lib/helper";
 //@ts-ignore
 import WeaveDB from "weavedb-sdk"
 
@@ -82,7 +82,7 @@ function CreateEvent() {
 
             const db = new WeaveDB({ contractTxId: process.env.NEXT_PUBLIC_WEAVEDB_CONTRACT_TX_ID })
             await db.init()
-            let res = await db.add(eventData, "event-testing")
+            let res = await db.add(eventData, COLLECTION)
             console.log(res)
 
             setIsFormSubmitted(true)
