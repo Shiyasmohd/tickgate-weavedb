@@ -2,4 +2,5 @@
 
 ## Tickgate
 </div>
-### An NFT Token gating system to make the ticket verification process efficient and tamper-proof
+
+An NFT Token gating system to make the ticket verification process efficient and tamper-proof
